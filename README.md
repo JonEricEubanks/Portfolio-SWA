@@ -4,6 +4,8 @@ Personal portfolio showcasing production AI agents, Power Platform apps, Power B
 
 **Live site:** https://happy-tree-026e2110f.7.azurestaticapps.net/
 
+This repo is the dedicated source for the Azure Static Web Apps deployment, split out from the original Vercel-hosted repo so the two deployments (and their differing `api/` runtimes) don't collide.
+
 ## Highlights
 
 - **CivicGrant IQ** (June 2026) — Best IQ Agent, Microsoft Agents League. Five-agent system that rose from a field of ~5,000 contestants and turns federal NOFOs into traceable municipal pursuit decisions.
