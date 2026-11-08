@@ -69,12 +69,33 @@ jobs:
           ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    needs: [portfolio_tests, build_and_deploy_job]
+    if: always() && github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     name: Close Pull Request Job
     steps:
+      - name: Check pull request state for cleanup
+        id: preview_status
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          state="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq .state)"
+          case "$state" in
+            open)
+              echo "open=true" >> "$GITHUB_OUTPUT"
+              ;;
+            closed)
+              echo "open=false" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "::error::Unexpected pull request state: $state"
+              exit 1
+              ;;
+          esac
       - name: Close Pull Request
         id: closepullrequest
+        if: steps.preview_status.outputs.open == 'false'
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_HAPPY_TREE_026E2110F }}
