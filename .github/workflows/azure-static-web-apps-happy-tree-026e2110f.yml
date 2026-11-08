@@ -9,6 +9,11 @@ on:
     branches:
       - main
 
+# Let in-flight preview work finish before the same pull request is cleaned up.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || format('run-{0}', github.run_id) }}
+  cancel-in-progress: false
+
 jobs:
   portfolio_tests:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
@@ -21,12 +26,35 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
+      - name: Check pull request state
+        id: pr_status
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          state="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq .state)"
+          case "$state" in
+            open)
+              echo "open=true" >> "$GITHUB_OUTPUT"
+              ;;
+            closed)
+              echo "Pull request is closed; skipping preview deployment."
+              echo "open=false" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "::error::Unexpected pull request state: $state"
+              exit 1
+              ;;
+          esac
       - uses: actions/checkout@v3
+        if: github.event_name == 'push' || steps.pr_status.outputs.open == 'true'
         with:
           submodules: true
           lfs: false
       - name: Build And Deploy
         id: builddeploy
+        if: github.event_name == 'push' || steps.pr_status.outputs.open == 'true'
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_HAPPY_TREE_026E2110F }}
