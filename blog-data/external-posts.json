@@ -1,5 +1,16 @@
 [
   {
+    "id": "ext-fabric-graph-vector-search",
+    "title": "Vector Search vs. Knowledge Graphs: Where Microsoft Fabric Graph Fits",
+    "category": "ai-copilot",
+    "excerpt": "A practical guide to relational databases, vector search, knowledge graphs, and Microsoft Fabric Graph through a local-government lens.",
+    "tags": ["Microsoft Fabric", "Fabric Graph", "Vector Search", "Knowledge Graphs", "GovTech"],
+    "image": "Images/blog/fabric-graph-cover.jpg",
+    "date": "2026-11-04T08:00:00.082Z",
+    "source": "Microsoft Tech Community",
+    "externalUrl": "https://techcommunity.microsoft.com/blog/educatordeveloperblog/vector-search-vs-knowledge-graphs-where-microsoft-fabric-graph-fits/4561849"
+  },
+  {
     "id": "ext-traffic-engineering-azure-app",
     "title": "What Traffic Engineering Taught Us About Building an Azure App",
     "category": "gis-gov",
