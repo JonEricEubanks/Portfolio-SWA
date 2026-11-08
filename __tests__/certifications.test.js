@@ -65,9 +65,10 @@ test('the chatbot includes the new certification in grounded answers', () => {
 test('the career timeline links to the new certification', () => {
     const timelineHtml = fs.readFileSync(path.join(root, 'career-timeline.html'), 'utf8');
     const timeline = new DOMParser().parseFromString(timelineHtml, 'text/html');
-    const entry = timeline.querySelector('[data-year="Nov 2026"]');
+    const entry = Array.from(timeline.querySelectorAll('[data-year="Nov 2026"]'))
+        .find(item => item.querySelector('a')?.getAttribute('href') === credentialLink);
 
-    expect(entry).not.toBeNull();
+    expect(entry).toBeDefined();
     expect(entry.textContent).toContain(credentialTitle);
     expect(entry.querySelector('img').getAttribute('src')).toBe(credentialImage);
     expect(entry.querySelector('a').getAttribute('href')).toBe(credentialLink);
