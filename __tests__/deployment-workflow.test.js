@@ -44,6 +44,23 @@ test('closing a pull request still cleans up its Azure preview', () => {
     expect(closeJob).toContain('action: "close"');
 });
 
+test('pull-request runs finish before preview cleanup without serializing production runs', () => {
+    expect(deployment).toContain(
+        "group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || format('run-{0}', github.run_id) }}"
+    );
+    expect(deployment).toMatch(/^  cancel-in-progress: false$/m);
+});
+
+test('the preview deploy checks the current pull-request state', () => {
+    const deployJob = job('build_and_deploy_job');
+    const deployStep = deployJob.slice(deployJob.indexOf('- name: Build And Deploy'));
+
+    expect(deployJob).toContain('id: pr_status');
+    expect(deployJob).toContain('gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq .state');
+    expect(deployJob).toContain('Pull request is closed; skipping preview deployment.');
+    expect(deployStep).toContain("if: github.event_name == 'push' || steps.pr_status.outputs.open == 'true'");
+});
+
 test('portfolio checks are reusable, manually runnable, and include both dependency sets', () => {
     expect(checks).toMatch(/^on:\n  workflow_call:\n  workflow_dispatch:/m);
     expect(checks).toContain('run: npm ci\n');

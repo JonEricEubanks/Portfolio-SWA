@@ -35,7 +35,9 @@ before deploying. The checks install the locked site and API dependencies and
 run the Jest suite, including credential and published-writing tests.
 
 - A pull request to `main` runs the tests and, only if they pass, deploys an
-  Azure preview. Closing the pull request cleans up its preview.
+  Azure preview. Runs for the same pull request are serialized and its state
+  is checked again before deployment, so closing it cleans up the preview
+  without an earlier run recreating it.
 - A push to `main` runs the same tests and, only if they pass, deploys the site
   root and `api/` Azure Functions to production. If tests fail, the previous
   production deployment remains live.
