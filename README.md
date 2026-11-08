@@ -4,7 +4,8 @@ Personal portfolio showcasing production AI agents, Power Platform apps, Power B
 
 **Live site:** https://happy-tree-026e2110f.7.azurestaticapps.net/
 
-This repo is the dedicated source for the Azure Static Web Apps deployment, split out from the original Vercel-hosted repo so the two deployments (and their differing `api/` runtimes) don't collide.
+This repository is the deployment source for Azure Static Web Apps. It has a
+separate history from the `JonEricEubanks/Portfolio` source repository.
 
 ## Highlights
 
@@ -28,16 +29,42 @@ This repo is the dedicated source for the Azure Static Web Apps deployment, spli
 
 ## GitHub Actions and deployment
 
-The source repository is **JonEricEubanks/Portfolio**. Its [Portfolio checks workflow](.github/workflows/portfolio-checks.yml) runs on pull requests targeting `main`, pushes to `main`, and manual runs from the GitHub Actions tab. It installs the locked site and API dependencies, then runs the Jest suite, including checks for credential counts, screenshots, and verification links.
+The [Azure deployment workflow](.github/workflows/azure-static-web-apps-happy-tree-026e2110f.yml)
+calls the shared [Portfolio checks workflow](.github/workflows/portfolio-checks.yml)
+before deploying. The checks install the locked site and API dependencies and
+run the Jest suite, including credential and published-writing tests.
+
+- A pull request to `main` runs the tests and, only if they pass, deploys an
+  Azure preview. Closing the pull request cleans up its preview.
+- A push to `main` runs the same tests and, only if they pass, deploys the site
+  root and `api/` Azure Functions to production. If tests fail, the previous
+  production deployment remains live.
+- Portfolio checks can also be started manually from the GitHub Actions tab.
 
 For portfolio updates:
 
-1. Make changes on a branch in the source repository and open a pull request to `main`.
-2. Review the changes and wait for **Portfolio checks / Portfolio tests** to pass before merging.
-3. Promote the reviewed changes to **JonEricEubanks/Portfolio-SWA** without removing its existing deployment workflow. A pull request there can provide an Azure preview; merging into its `main` branch triggers the production deployment.
-4. Verify the update on the [live site](https://happy-tree-026e2110f.7.azurestaticapps.net/).
+1. Make the requested changes on a branch and run the local checks below.
+2. Open a pull request in **JonEricEubanks/Portfolio-SWA**. Wait for
+   **Validate portfolio / Portfolio tests** and the Azure preview deployment
+   to pass, then inspect the preview.
+3. Merge only when production publication is authorized, and verify the
+   [live site](https://happy-tree-026e2110f.7.azurestaticapps.net/).
+4. Reconcile the separate **JonEricEubanks/Portfolio** source repository when
+   safe. Its pushes do not automatically update this repository, and its
+   independent Vercel integration may still deploy on push. Do not trigger
+   that integration without the user's approval.
 
-The two repositories have separate histories: a push or successful check in `Portfolio` does **not** automatically update `Portfolio-SWA` or deploy the site. The deployment repository's `.github/workflows/azure-static-web-apps-happy-tree-026e2110f.yml` publishes the site root and the `api/` Azure Functions. Branch protection must be configured separately if passing checks should be required for merging.
+For certifications, verify the official name and link, add the screenshot,
+keep the displayed count and relevant timeline/chat content in sync, and
+update the tests. For published articles, verify the title, author, date, and
+URL; update the writing card, `blog-data/external-posts.json`, image, timeline
+when applicable, and tests. When removing a credential, remove the requested
+claim from the relevant page, timeline, chat context, and résumé only as
+authorized; preserve unrelated credentials and existing profile links.
+
+GitHub Actions runs these checks and deployments; it does not author portfolio
+changes or disconnect independent integrations. Branch protection must be
+configured separately if passing checks should also be required for merging.
 
 When changing `style.css` or other assets, bump the cache-busting query string in `index.html` (e.g. `style.css?v=YYYYMMDD`) so browsers pick up the new version.
 
