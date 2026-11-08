@@ -81,9 +81,10 @@ The `chat.js` extracts this data via `extractPortfolioData()` to provide the AI 
 
 ### Deployment Workflow
 - Run `npm test -- --runInBand`; a clean checkout also needs `npm ci` and `npm ci --prefix api`.
-- Open a pull request in `Portfolio` and verify the `Portfolio checks` workflow before merging.
-- The source and deployment repositories do not automatically sync. Promote reviewed changes to `Portfolio-SWA` separately; its existing GitHub Actions workflow deploys its `main` branch to Azure.
-- See `README.md` for the update and deployment process. Do not force-push over the deployment repository's workflow.
+- `Portfolio-SWA` is the Azure deployment repository. Its workflow runs portfolio checks before deploying a pull-request preview or a `main` push to production.
+- Verify the preview and obtain authorization before publishing to production. The source and deployment repositories do not automatically sync.
+- Do not push to `Portfolio` while its independent Vercel integration would deploy without the user's approval.
+- See `README.md` for certification, article, credential-removal, and deployment steps. Do not force-push over the deployment workflow.
 
 ## Common Tasks
 
