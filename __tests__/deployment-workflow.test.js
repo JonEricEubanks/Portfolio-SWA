@@ -36,12 +36,25 @@ test('Azure previews and production call the shared checks first', () => {
     expect(deployJob).toContain('api_location: "api"');
 });
 
-test('closing a pull request still cleans up its Azure preview', () => {
+test('every pull-request run reconciles its preview after tests and deployment', () => {
     const closeJob = job('close_pull_request_job');
 
-    expect(closeJob).toContain("github.event.action == 'closed'");
-    expect(closeJob).not.toMatch(/^\s+needs:/m);
+    expect(closeJob).toContain('needs: [portfolio_tests, build_and_deploy_job]');
+    expect(closeJob).toContain("if: always() && github.event_name == 'pull_request'");
+    expect(closeJob).not.toContain('github.event.action');
+    expect(closeJob).toContain('id: preview_status');
+    expect(closeJob).toContain("if: steps.preview_status.outputs.open == 'false'");
     expect(closeJob).toContain('action: "close"');
+});
+
+test('preview cleanup uses the current pull-request state and fails on unexpected states', () => {
+    const closeJob = job('close_pull_request_job');
+
+    expect(closeJob).toContain('gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq .state');
+    expect(closeJob).toMatch(/open\)\n\s+echo "open=true" >> "\$GITHUB_OUTPUT"/);
+    expect(closeJob).toMatch(/closed\)\n\s+echo "open=false" >> "\$GITHUB_OUTPUT"/);
+    expect(closeJob).toMatch(/::error::Unexpected pull request state: \$state"\n\s+exit 1/);
+    expect(closeJob.indexOf('gh api')).toBeLessThan(closeJob.indexOf('action: "close"'));
 });
 
 test('pull-request runs finish before preview cleanup without serializing production runs', () => {
