@@ -73,3 +73,53 @@ test('the career timeline links to the new certification', () => {
     expect(entry.querySelector('img').getAttribute('src')).toBe(credentialImage);
     expect(entry.querySelector('a').getAttribute('href')).toBe(credentialLink);
 });
+
+test('PMP is removed while the Google project management certificate remains', () => {
+    const group = document.querySelector('#certifications [data-credential-type="certification"]');
+    expect(group.querySelector('.credential-count').textContent).toBe('7');
+    expect(group.textContent).not.toMatch(/\bPMP\b|\bPMI\b/i);
+    expect(group.textContent).toContain('Google Project Management Professional Certificate');
+    expect(document.querySelector('a[href*="joneric-eubanks-pmp-developer"]')).not.toBeNull();
+
+    jest.resetModules();
+    const { JonEricChatBot } = require('../chat.js');
+    const answer = new JonEricChatBot().getCredentialsResponse();
+    expect(answer).not.toMatch(/\bPMP\b|\bPMI\b/i);
+    expect(answer).toContain('Google Project Management Professional Certificate');
+});
+
+test('the career timeline no longer claims the PMP credential', () => {
+    const timelineHtml = fs.readFileSync(path.join(root, 'career-timeline.html'), 'utf8');
+    const timeline = new DOMParser().parseFromString(timelineHtml, 'text/html');
+
+    expect(timeline.querySelector('.profile-name').textContent).toBe('JonEric Eubanks');
+    expect(timeline.body.textContent).not.toMatch(/\bPMP\b|\bPMI\b/i);
+    expect(timeline.body.textContent).toContain('Google PM & Data Analytics');
+});
+
+test('the chatbot tour and frontend context omit the PMP claim', () => {
+    jest.resetModules();
+    const { JonEricChatBot } = require('../chat.js');
+    const bot = new JonEricChatBot();
+    document.querySelectorAll('[id]').forEach(element => {
+        element.scrollIntoView = jest.fn();
+    });
+    bot.addMessage = jest.fn();
+
+    jest.useFakeTimers();
+    try {
+        bot.startGuidedTour();
+        jest.advanceTimersByTime(23300);
+        const certificationStop = bot.conversationHistory.find(message =>
+            message.content.includes('Stop 6')
+        );
+        expect(certificationStop).toBeDefined();
+        expect(certificationStop.content).toContain(credentialTitle);
+        expect(certificationStop.content).not.toMatch(/\bPMP\b|\bPMI\b/i);
+    } finally {
+        jest.clearAllTimers();
+        jest.useRealTimers();
+    }
+
+    expect(bot.buildContextPrompt()).not.toMatch(/\bPMP\b|\bPMI\b/i);
+});

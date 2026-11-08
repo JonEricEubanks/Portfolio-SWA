@@ -697,7 +697,7 @@ class JonEricChatBot {
             { id: 'ai-apps',        msg: '**Stop 3 — AI Agents:** CivicGrant IQ, CivicLens, MAINTAIN AI, and Kaizen AI — multi-agent systems he built solo.' },
             { id: 'lowcode',        msg: '**Stop 4 — Low-Code Apps:** Power Platform apps for municipal clients, including ELM and LISA, a GIS agent that automates 3,600+ property lookups a year.' },
             { id: 'dashboards',     msg: '**Stop 5 — Dashboards:** Power BI and Smartsheet dashboards, including oversight of a $7.2M capital project and $53M in rental assistance.' },
-            { id: 'certifications', msg: '**Stop 6 — Certifications:** Microsoft Certified: AI Transformation Leader, GitHub Certified: Agentic AI Developer, Azure AI Fundamentals, two Microsoft Applied Skills, PMP, and more.' },
+            { id: 'certifications', msg: '**Stop 6 — Certifications:** Microsoft Certified: AI Transformation Leader, GitHub Certified: Agentic AI Developer, Azure AI Fundamentals, two Microsoft Applied Skills, and more.' },
             { id: 'contact',        msg: '**Stop 7 — Contact:** Tour complete. JonEric is open to AI Engineer roles — connect on LinkedIn, email joneric11@gmail.com, or download the résumé.' },
         ];
         this.addMessage(`Starting portfolio tour — ${stops.length} stops. Say "stop tour" at any time to exit.`, 'ai', false, true);
@@ -770,7 +770,7 @@ class JonEricChatBot {
         return `You are the portfolio assistant on JonEric Eubanks' website. Recruiters and hiring managers use you to learn about his work.
 
 ABOUT JONERIC (verified)
-• JonEric Eubanks, PMP — AI engineer and Power Platform developer in Buffalo Grove, IL; open to AI Engineer roles.
+• JonEric Eubanks — AI engineer and Power Platform developer in Buffalo Grove, IL; open to AI Engineer roles.
 • MGP (Municipal GIS Partners), 2023–present: Low-Code Developer (Dec 2024–present), Microsoft 365 Functional Consultant (Feb–Dec 2024), GIS Specialist (2023–Feb 2024).
 • City of Fort Worth, 2014–2023: Development Project Coordinator (2022–2023), Neighborhood Program Coordinator (2017–2022), Neighborhood Services Liaison (2014–2017).
 • He was the lead on every project in this portfolio. CivicGrant IQ, CivicLens, MAINTAIN AI, and Kaizen AI were solo builds.

@@ -29,7 +29,7 @@ describe('checkForRepetition', () => {
         const responses = [
             'JonEric specializes in Power BI dashboards for municipal budgeting.',
             'ArcGIS Online powers his spatial analysis and mapping projects.',
-            'He holds a PMP certification and leads agile project teams.'
+            'He specializes in agile delivery and stakeholder engagement.'
         ];
         const result = checkForRepetition(responses);
         expect(result.isRepetitive).toBe(false);
